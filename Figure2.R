@@ -24,7 +24,7 @@ fviz_pca_var(pca_res, select.var = list(contrib = 20), repel=TRUE,
 
 fviz_pca_var(pca_res, alpha.var = "contrib")
 
-fviz_pca_ind(pca_res)
+fviz_pca_ind(pca_res) 
 
 # Contributions of variables to PC1
 fviz_contrib(pca_res, choice = "var", axes = 1, top = 20)
