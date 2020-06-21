@@ -1,7 +1,6 @@
 # Plasma protein analyses MIS-C (Figure 4)
 
 # Load olink NPX (normalized prot expr)
-setwd("~/Box/MIS-C manuscript/Data and code/Fig4_Olink")
 olink <- read.csv("Petter_Brodin_Covid-19_Plate2_NPX_LOD_a.csv", header = T, row.names = 1, check.names = FALSE) #184 proteins
 # Ddetect number of samples with limit of detection (LOD)
 num_LOD <- apply(olink, 2, function(x) length(which(x[1:90] == x[91])) )
@@ -39,7 +38,6 @@ pca <- prcomp(na.omit(olink), scale. = T)
 pca_x <- as.data.frame(pca$x)
 
 # Add grouping variables
-setwd("~/Box/MIS-C manuscript/Data and code/Fig4_Olink")
 IDs <- read.csv("olinkIDs.csv", row.names = 1, header = T, stringsAsFactors = FALSE)
 pca_x <- merge(IDs, pca_x, by.x="ID", by.y="row.names", sort=FALSE)
 pca_x$Group <- factor(pca_x$Group, levels = c("Healthy", "CoV2+", "MIS-C", "Kawasaki"))
