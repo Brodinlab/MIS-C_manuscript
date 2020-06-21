@@ -1,7 +1,7 @@
 # AutoAb analyses (Figure 6)
 
 # Load IDs
-IDs <- read.csv("https://ki.box.com/shared/static/79l4nc7uevffkop3u7a3uy387c2z11dr.csv", header = T, row.names = 1)
+IDs <- read.csv("https://ki.box.com/shared/static/klnb3bnxlbb1uwq94p8i1wvjszgjcqfd.csv", header = T, row.names = 1)
 # Load autoAb data (unnormalized signal intensity)
 autoAbs <- read.csv("https://ki.box.com/shared/static/m1sudpywenucku4orsfudg3zuc05i7a3.csv", header = T, stringsAsFactors = FALSE)
 library(stringr)
