@@ -18,7 +18,7 @@ Project is created with:
 * RStudio version: 3.6.2
 
 ## Repo description
-- ```Figure*``` reproducible code for figures laid out in manuscript
+- ```Figure*.R``` reproducible code for figures laid out in manuscript
 
 ## Omics integration
 ### MOFA
