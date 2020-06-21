@@ -1,10 +1,8 @@
 # AutoAb analyses MIS-C vs Healthy
 
 # Load IDs
-setwd("~/Box/MIS-C manuscript/Data and code/Fig6_Autoantibodies")
 IDs <- read.csv("IDs.csv", header = T, row.names = 1)
 # Load autoAb data (unnormalized signal intensity)
-setwd("~/Box/MIS-C manuscript/Data and code/Fig6_Autoantibodies")
 autoAbs <- read.csv("Kawasaki.Experiment.RawData.NotNormalised.csv", header = T, stringsAsFactors = FALSE)
 library(stringr)
 autoAbs$uORF <- sapply(str_split(autoAbs$Name, "~"), "[", 3)
