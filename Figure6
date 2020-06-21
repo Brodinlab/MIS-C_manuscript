@@ -1,9 +1,9 @@
 # AutoAb analyses MIS-C vs Healthy
 
 # Load IDs
-IDs <- read.csv("IDs.csv", header = T, row.names = 1)
+IDs <- read.csv("https://ki.box.com/shared/static/79l4nc7uevffkop3u7a3uy387c2z11dr.csv", header = T, row.names = 1)
 # Load autoAb data (unnormalized signal intensity)
-autoAbs <- read.csv("Kawasaki.Experiment.RawData.NotNormalised.csv", header = T, stringsAsFactors = FALSE)
+autoAbs <- read.csv("https://ki.box.com/shared/static/m1sudpywenucku4orsfudg3zuc05i7a3.csv", header = T, stringsAsFactors = FALSE)
 library(stringr)
 autoAbs$uORF <- sapply(str_split(autoAbs$Name, "~"), "[", 3)
 autoAbs$uORF <- str_remove(autoAbs$uORF, "uORF:")
@@ -24,7 +24,6 @@ autoAbs_sampleinfo <- merge(IDs, autoAbs_avr, by.x="Identification", by.y="Row.n
 # Figure 6A
 # Df without APS1
 autoAbs_noAPS <- autoAbs_sampleinfo[!(autoAbs_sampleinfo$Group %in% "APS1"),]
-rm(autoAbs, autoAbs_avr, autoAbs_sampleinfo)
 library(reshape2)
 m_autoAbs <- melt(autoAbs_noAPS, id.vars = c("Identification", "Group", "Subjects"))
 m_autoAbs$Group <- factor(m_autoAbs$Group, levels = c("Healthy", "CoV2+", "MIS-C", "Kawasaki"))
