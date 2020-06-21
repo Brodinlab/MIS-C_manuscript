@@ -1,4 +1,4 @@
-# MIS-C_manuscript
+# MIS-C Manuscript analysis and figures
 
 ## Table of contents
 * [General info](#general-info)
