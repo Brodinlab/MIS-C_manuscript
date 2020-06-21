@@ -1,4 +1,4 @@
-# AutoAb analyses MIS-C vs Healthy
+# AutoAb analyses (Figure 6)
 
 # Load IDs
 IDs <- read.csv("https://ki.box.com/shared/static/79l4nc7uevffkop3u7a3uy387c2z11dr.csv", header = T, row.names = 1)
