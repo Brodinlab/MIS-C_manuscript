@@ -41,14 +41,16 @@ write.xlsx(olink, 'Olink_Kaw_MISC.xlsx', row.names=TRUE)
 ######################################
 #             Z-score                #
 ######################################
-# Data tables re-formatted as columsn (proteins) and rows (samples)
+# Data tables re-formatted as columns (proteins) and rows (samples)
 RUN12 <- read.csv('Olink_all_run12.csv', sep = ';')
 df <- RUN12[,-1]
 RUN12_Z <- apply(df, 1, scale)
 write.csv(t(RUN12_Z), 'Olink_all_run12Z.csv')
 
-RUN12 <- read.csv('Olink_all_run3.csv', sep = ';')
-df <- RUN12[,-1]
+# File 'Petter_Brodin_Covid-19_Plate1_NPX_LOD.xlsx' where Adult CoV2+ cases located, filtered by 30% cutoff and 
+# matching proteins between this plate and the normalized set of children cases
+RUN3 <- read.csv('Olink_all_run3.csv', sep = ';')
+df <- RUN3[,-1]
 RUN3A_Z <- apply(df, 1, scale)
 write.csv(t(RUN3A_Z), 'Olink_all_run3AZ.csv')
 
