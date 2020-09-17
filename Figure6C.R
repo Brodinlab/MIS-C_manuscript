@@ -1,9 +1,12 @@
 # The Immunology of Multisystem Inflammatory Syndrome in Children with COVID-19
 # Figure 6
 
+# Download data from Mendeley Data in Figure_6 folder.
+# http://dx.doi.org/10.17632/ds6g796xyg.1
+
 # Load preprocessed data
-virscan <- read.csv("https://ki.box.com/shared/static/sze052yaspnhe2czp8j6qgniix6tc3xh.csv", row.names = 1, stringsAsFactors = FALSE)
-label <- read.csv("https://ki.box.com/shared/static/9c84p9ue2gffvys2vttbdrphvdfm59ch.csv", row.names = 1, stringsAsFactors = FALSE)
+virscan <- read.csv("filtered-scores.csv", row.names = 1, stringsAsFactors = FALSE)
+label <- read.csv("filtered-scores-label.csv", row.names = 1, stringsAsFactors = FALSE)
 m_Vir <- merge(label, virscan, by="row.names")
 m_Vir$Label <- factor(m_Vir$Label, levels = c("Healthy","MIS-C", "COV2", "Kawasaki"))
 colnames(m_Vir)[1] <- "ID"
