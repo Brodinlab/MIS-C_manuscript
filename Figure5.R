@@ -1,8 +1,8 @@
 # The Immunology of Multisystem Inflammatory Syndrome in Children with COVID-19
 # Figure 5
 
-# Download olink data from:
-# https://ki.box.com/s/r9358dhjv31993it5k78zajem3nn2bib
+# Download data from Mendeley Data in Figure_5 folder.
+# http://dx.doi.org/10.17632/ds6g796xyg.1
 
 # Plasma protein data preprocessing
 # Read Olink NPX data
@@ -59,7 +59,7 @@ olink <- as.data.frame(t(olink))
 olink <- olink[,-which(olink[106,] > 31.5)] # 133 proteins
 olink <- olink[-106,] #remove lod_n info
 # Read ID info
-ID <- read.csv("https://ki.box.com/shared/static/csq9d9ig48gkm8zjfo1rlgr8tt40y8tq.csv", header = TRUE, stringsAsFactors = FALSE, row.names = 1)
+ID <- read.csv("Figure5-ID.csv", header = TRUE, stringsAsFactors = FALSE, row.names = 1)
 # Merge olink with ID data
 olink <- merge(ID[,c(1,2)], olink, by.x="Sample", by.y="row.names", sort=FALSE)
 MyBatch <- olink[,1:2]
