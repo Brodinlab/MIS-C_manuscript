@@ -1,8 +1,8 @@
 # The Immunology of Multisystem Inflammatory Syndrome in Children with COVID-19
 # Figure 4
 
-# Download olink data from:
-# https://ki.box.com/s/7qwdagyeqo7yhs6502aaxxb06oc5otlp
+# Download data from Mendeley Data in Figure_4 folder.
+# http://dx.doi.org/10.17632/ds6g796xyg.1
 
 # Plasma protein data preprocessing
 # Read Olink NPX data
@@ -20,16 +20,16 @@ newJuly <- July
 newJuly$NPX <- newJuly$NPX2  
 newJuly <- newJuly[,-c(14:17)]
 rm(July, dilutedby2)
-# bridge normalization (using bridge samples common in both runs)
+# Bridge normalization (using bridge samples common in both runs)
 bridge_samples <- intersect(x = newJuly$SampleID, y = May$SampleID)
 bridge_normalized_data <- olink_normalization(df1 = May, df2 = newJuly, overlapping_samples_df1 = bridge_samples)
-# cast df
+# Cast df
 olink <- bridge_normalized_data[,c(1,5,12)]
 library(reshape2)
 olink <- dcast(olink, SampleID ~ factor(Assay, levels = unique(olink$Assay)), fun.aggregate=function(i) mean(i, na.rm=TRUE))
 rownames(olink) <- olink$SampleID
 olink <- olink[,-1]
-# get LOD; since LOD varies between panels, collect individual LOD per protein then average them out
+# Get LOD; since LOD varies between panels, collect individual LOD per protein then average them out
 LOD <- bridge_normalized_data[,c(5,8,11)]
 LOD$dupl <- paste(LOD$Assay, LOD$Panel_Version, sep = "__")
 LOD <- as.data.frame(LOD[!duplicated(LOD$dupl),])
@@ -40,7 +40,7 @@ LOD <- as.data.frame(LOD %>% group_by(Assay) %>% summarise(mean=mean(LOD)))
 LOD$Assay <- as.character(LOD$Assay)
 rownames(LOD) <- LOD$Assay
 identical(LOD$Assay,colnames(olink)) #TRUE
-#add LOD to olink df
+# Add LOD to olink df
 olink <- as.data.frame(t(olink))
 olink <- merge(olink, LOD[,2, drop=FALSE], by="row.names", all = TRUE)
 rownames(olink) <- olink$Row.names
@@ -59,7 +59,7 @@ olink <- as.data.frame(t(olink))
 olink <- olink[,-which(olink[106,] > 31.5)] # 133 proteins
 olink <- olink[-106,] #remove lod_n info
 # Read ID info
-ID <- read.csv("https://ki.box.com/shared/static/vcrn9uaud6b5l7uk5rvgjgkf49mvehcv.csv", header = TRUE, stringsAsFactors = FALSE, row.names = 1)
+ID <- read.csv("Figure4-ID.csv", header = TRUE, stringsAsFactors = FALSE, row.names = 1)
 # Merge olink with ID data
 olink <- merge(ID[,c(1,2)], olink, by.x="Sample", by.y="row.names", sort=FALSE)
 MyBatch <- olink[,1:2]
@@ -68,18 +68,18 @@ olink <- olink[-c(1:2)]
 olink <- t(olink)
 # Batchcorrect
 library(limma)
-olinkX <- as.data.frame(t(removeBatchEffect(x = olink, batch = MyBatch$Batch2)))
+olinkY <- as.data.frame(t(removeBatchEffect(x = olink, batch = MyBatch$Batch2)))
 # Remove healthy adults from olink df
-olinkX <- subset(olinkX, !(grepl("HC", rownames(olinkX) )) ) #102 subjects total
+olinkY <- subset(olinkY, !(grepl("HC", rownames(olinkY) )) ) #102 subjects total
 # Remove multiple samples from same subject
 # MISC6 and MISC5 are the same subject/ same day / pretreatment
 # MISC11 and MISC12 are the same subject/ same day / pretreatment
 # MISC15 and MISC1 are the same subject/ same day / posttreatment
-olinkX <- olinkX[!(rownames(olinkX) %in% c("MIS-C 6", "MIS-C 11", "MIS-C 15")),] #99 subjects total
+olinkY <- olinkY[!(rownames(olinkY) %in% c("MIS-C 6", "MIS-C 11", "MIS-C 15")),] #99 subjects total
 # Remove samples from treated MIS-C subjects
 post <- ID$Sample[ID$Treatment == "Post"]
-rownames(olinkX)[(rownames(olinkX) %in% post)]
-olinkX <- olinkX[!(rownames(olinkX) %in% post),] #92 total
+rownames(olinkY)[(rownames(olinkY) %in% post)]
+olinkX <- olinkY[!(rownames(olinkY) %in% post),] #92 total
 rm(bridge_samples, bridge_normalized_data, LOD, May, MyBatch, newJuly, num_LOD, olink, post)
 
 # Data analysis
@@ -177,13 +177,13 @@ diffs <- unlist(diffs)
 diffs
 
 
-# Supplementary Figure 3
-# Supplementary Figure 3A
+# Supplementary Figure 2
+# Supplementary Figure 2A
 melt_olink <- reshape2::melt(olinkX_ID, id.vars = c("Sample", "Group2", "Batch2", "Treatment"))
 melt_olink$Group2 <- factor(melt_olink$Group2, levels = c("Healthy kids", "CoV2+","MIS-C", "Kawasaki"))
 MMPs <- c("MMP-10", "MMP-1")
-melt_olink <- subset(melt_olink, variable %in% MMPs)
-ggplot(melt_olink, aes(x=Group2, y=value)) + theme_minimal() + 
+olink_MMPs <- subset(melt_olink, variable %in% MMPs)
+ggplot(olink_MMPs, aes(x=Group2, y=value)) + theme_minimal() + 
   geom_violin(aes(fill=Group2, colour=Group2)) +
   facet_wrap(~ variable, scales = "free", ncol = 3) + 
   geom_jitter(shape=16, position=position_jitter(0.2), size=0.8, colour="black") +
@@ -198,24 +198,21 @@ diffs <- lapply(olink_kd_MISC[,-(1:2)], function(i) wilcox.test(i ~ olink_kd_MIS
 diffs <- unlist(diffs)
 diffs
 
-# Supplementary Figure 3B
-olink_kd_CoV <- olinkX_ID[olinkX_ID$Group2 %in% c("MIS-C", "CoV2+"), ]
-cdiffs <- lapply(olink_kd_CoV[,-(1:4)], function(i) wilcox.test(i ~ olink_kd_CoV$Group2)$p.value )
-cdiffs <- unlist(cdiffs)
-cdiffs <- cdiffs[cdiffs < 0.05]
-cdiffs
-covdiffs <- names(cdiffs)
-melt_olink <- reshape2::melt(olinkX_ID, id.vars = c("Sample", "Group2", "Batch2", "Treatment"))
-melt_olink$Group2 <- factor(melt_olink$Group2, levels = c("Healthy kids", "CoV2+","MIS-C", "Kawasaki"))
-melt_olink <- subset(melt_olink, variable %in% covdiffs)
-ggplot(melt_olink, aes(x=Group2, y=value)) + theme_minimal() + 
-  geom_violin(aes(fill=Group2, colour=Group2)) +
-  facet_wrap(~ variable, scales = "free", ncol = 5) + 
+# Supplementary Figure 2B
+olinkY_ID <- merge(ID, olinkY, by.x="Sample", by.y="row.names", sort=FALSE)
+melt_olinkY_ID <- reshape2::melt(olinkY_ID, id.vars = c("Sample", "Group2", "Batch2", "Treatment"))
+melt_olinkY_ID$Group_treatment <- str_remove(paste(melt_olinkY_ID$Group2, melt_olinkY_ID$Treatment, sep = "_"), "_NA")
+melt_olinkY_ID$Group_treatment <- factor(melt_olinkY_ID$Group_treatment, levels = c("Healthy kids","CoV2+","MIS-C_Pre","MIS-C_Post", "Kawasaki"))
+olink_TNF <- subset(melt_olinkY_ID, variable %in% "TNF")
+#Violin plots
+ggplot(olink_TNF, aes(x=Group_treatment, y=value)) + theme_minimal() + 
+  geom_violin(aes(fill=Group_treatment, colour=Group_treatment)) +
   geom_jitter(shape=16, position=position_jitter(0.2), size=0.8, colour="black") +
-  scale_fill_manual(values=c("#2F8AC4", "#E48725", "#A5AA99", "#CD3A8E")) +
-  scale_color_manual(values=c("#2F8AC4", "#E48725", "#A5AA99", "#CD3A8E")) +
-  theme(axis.text.x = element_text(size = 5), legend.title = element_blank()) + labs(x=NULL, y="NPX") 
-
+  ggtitle("Plasma proteins") +
+  scale_fill_manual(values=c("#2F8AC4", "#E48725", "#A5AA99", "#A5AA99", "#CD3A8E")) +
+  scale_color_manual(values=c("#2F8AC4", "#E48725", "#A5AA99", "#A5AA99", "#CD3A8E")) +
+  theme(axis.text.x = element_text(size = 5), legend.title = element_blank()) + labs(x=NULL, y="NPX") +
+  ggtitle("TNF")
 
 
 sessionInfo()
@@ -227,9 +224,10 @@ sessionInfo()
 #  [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 #other attached packages:
-#[1] cowplot_1.0.0      factoextra_1.0.7   limma_3.40.6       reshape2_1.4.4     OlinkAnalyze_1.0.2 readxl_1.3.1       forcats_0.5.0     
-#[8] dplyr_1.0.0        purrr_0.3.4        readr_1.3.1        tidyr_1.1.0        tibble_3.0.2       tidyverse_1.3.0    stringr_1.4.0     
-#[15] openxlsx_4.1.5     lmerTest_3.1-2     lme4_1.1-23        Matrix_1.2-18      ggrepel_0.8.2      ggfortify_0.4.10   ggplot2_3.3.2     
-#[22] emmeans_1.4.8      car_3.0-8          carData_3.0-4      broom_0.7.0       
+#[1] cowplot_1.1.0      factoextra_1.0.7   limma_3.40.6       reshape2_1.4.4     OlinkAnalyze_1.0.2 readxl_1.3.1      
+#[7] forcats_0.5.0      dplyr_1.0.2        purrr_0.3.4        readr_1.3.1        tidyr_1.1.2        tibble_3.0.3      
+#[13] tidyverse_1.3.0    stringr_1.4.0      openxlsx_4.1.5     lmerTest_3.1-2     lme4_1.1-23        Matrix_1.2-18     
+#[19] ggrepel_0.8.2      ggfortify_0.4.10   ggplot2_3.3.2      emmeans_1.5.0      car_3.0-9          carData_3.0-4     
+#[25] broom_0.7.0   
 
 
