@@ -8,6 +8,8 @@
 * [Setup](#setup)
 
 ## General info
+Publication: "The Immunology of Multisystem Inflammatory Syndrome in Children with COVID-19"
+
 This project used multiple omics data:
 - Plasma protein expression (Olink - NPX values)
 - FACS
